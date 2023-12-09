@@ -1,4 +1,5 @@
 import { createStore } from "redux";
+import { CALCULATE_NAME } from "./constants/handleName";
 
 const plus = document.getElementById("add");
 const minus = document.getElementById("minus");
@@ -26,11 +27,11 @@ const onChange = () => {
 store.subscribe(onChange);
 
 const handlePlus = () => {
-  store.dispatch({ type: "PLUS" });
+  store.dispatch({ type: CALCULATE_NAME.PLUS });
 };
 
 const handleMinus = () => {
-  store.dispatch({ type: "MINUS" });
+  store.dispatch({ type: CALCULATE_NAME.MINUS });
 };
 
 plus.addEventListener("click", handlePlus);
