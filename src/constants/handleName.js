@@ -1,6 +1,11 @@
-const CALCULATE_NAME = Object.freeze({
+const CALCULATE_TYPE = Object.freeze({
   PLUS: "PLUS",
   MINUS: "MINUS",
 });
 
-export { CALCULATE_NAME };
+const TODO_TYPE = Object.freeze({
+  ADD_TODO: "ADD_TODO",
+  DELETE_TODO: "DELETE_TODO",
+});
+
+export { CALCULATE_TYPE, TODO_TYPE};
