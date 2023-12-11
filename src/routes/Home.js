@@ -1,14 +1,15 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
+import { addToDo } from "../store";
 
-export default function Home() {
+function Home({ toDos, dispatch }) {
   const [text, setText] = useState("");
   function onChange(e) {
     setText(e.target.value);
   }
   function onSubmit(e) {
     e.preventDefault();
-    console.log(text);
-    setText("")
+    setText("");
   }
   return (
     <>
@@ -17,7 +18,19 @@ export default function Home() {
         <input type="text" value={text} onChange={onChange} />
         <button>ADD</button>
       </form>
-      <ul></ul>
+      <ul>{JSON.stringify(toDos)}</ul>
     </>
   );
 }
+
+function mapStateToProps(state) {
+  return { toDos: state };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addToDos: text => dispatch(addToDo.addToDos(text))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
