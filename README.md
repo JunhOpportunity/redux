@@ -69,3 +69,40 @@ return {
 	...obj
 }
 ```
+
+# React redux
+
+## 기본
+
+Provider 로 감싸주어야 한다
+
+```jsx
+<Provider store={store}>
+	<App/>
+</Provider>
+```
+
+## 컴포넌트에서 Redux Store 데이터 연결하기
+
+> connect를 사용했지만 현재는 useSelector 사용을 권장한다.
+> 
+
+### Connect
+
+- connect는 state와 dispatch 두 개의 매개변수를 갖는다.
+- 여기서 주의할 점은 해당 컴포넌트를 미리 export 하지 말고 connect 부분에서만 export 해줘야 한다는 것이다.
+- mapStateToProps 함수는 반드시 객체 형태를 반환해야 한다.
+
+```jsx
+import { connect } from "react-redux"
+
+function mapStateToProps(state, ownProps) {
+  return { toDo: state };
+}
+
+export default connect(mapStateToProps)(Home);
+```
+
+이렇게 connect로 연결하게 되면 store 의 state를 받아올 수 있다.
+
+### useSelector
