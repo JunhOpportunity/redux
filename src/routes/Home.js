@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
+import ToDo from "../components/ToDo";
 import { addToDo } from "../store";
+
 
 export default function Home() {
   const [text, setText] = useState("");
-  const todo = useSelector((state) => state)
+  const todo = useSelector((state) => state);
   const dispatch = useDispatch();
 
   function onChange(e) {
@@ -12,8 +14,10 @@ export default function Home() {
   }
   function onSubmit(e) {
     e.preventDefault();
+    dispatch(addToDo.addToDo(text));
     setText("");
   }
+
   return (
     <>
       <h1>To Do</h1>
@@ -21,7 +25,11 @@ export default function Home() {
         <input type="text" value={text} onChange={onChange} />
         <button>ADD</button>
       </form>
-      <ul></ul>
+      <ul>
+        {todo.map((todo) => (
+          <ToDo props={todo} />
+        ))}
+      </ul>
     </>
   );
 }
