@@ -1,17 +1,32 @@
 import React from "react";
 import { createStore } from "redux";
 import { Provider, useSelector, useDispatch } from "react-redux";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, configureStore } from "@reduxjs/toolkit";
 
-function reducer(state, action) {
-  if (action.type === "up") {
-    return { ...state, value: state.value + action.step };
-  }
-  return state;
-}
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    up: (state, action) => {
+      state.value = state.value + action.step;
+    },
+  },
+});
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+  },
+});
 
-const initialState = { value: 0 };
-const store = createSlice(reducer, initialState);
+// function reducer(state, action) {
+//   if (action.type === "up") {
+//     return { ...state, value: state.value + action.step };
+//   }
+//   return state;
+// }
+
+// const initialState = { value: 0 };
+// const store = createSlice(reducer, initialState);
 
 function Counter() {
   const dispatch = useDispatch();
