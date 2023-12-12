@@ -14,7 +14,7 @@ export default function Home() {
   }
   function onSubmit(e) {
     e.preventDefault();
-    dispatch(addToDo.addToDo(text));
+    dispatch(addToDo(text));
     setText("");
   }
 
