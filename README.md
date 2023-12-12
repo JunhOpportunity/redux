@@ -72,6 +72,10 @@ return {
 
 # React redux
 
+## Setup
+
+`$ npm i react-redux react-router-dom`
+
 ## 기본
 
 Provider 로 감싸주어야 한다
@@ -89,20 +93,141 @@ Provider 로 감싸주어야 한다
 
 ### Connect
 
-- connect는 state와 dispatch 두 개의 매개변수를 갖는다.
+- connect는 state(=mapStateToProps)와 dispatch(=mapDispatchToProps) 두 개의 매개변수를 갖는다.
 - 여기서 주의할 점은 해당 컴포넌트를 미리 export 하지 말고 connect 부분에서만 export 해줘야 한다는 것이다.
-- mapStateToProps 함수는 반드시 객체 형태를 반환해야 한다.
+- mapStateToProps와 mapDispatchToProps 는 반드시 객체 형태를 반환해야 한다.
+- 연결된 컴포넌트의 props에서 state와 dispatch를 사용할 수 있다.
 
 ```jsx
 import { connect } from "react-redux"
+
+function App({state, dispatch})
 
 function mapStateToProps(state, ownProps) {
   return { toDo: state };
 }
 
-export default connect(mapStateToProps)(Home);
+function mapStateToProps(dispatch, ownProps) {
+  return { dispatch };
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(Home);
 ```
 
 이렇게 connect로 연결하게 되면 store 의 state를 받아올 수 있다.
 
+### mapStateToProps
+
+> 컴포넌트와 Redux Store state를 연결시켜주는 역할을 한다.
+> 
+- 매개변수로 state와 ownProps를 받는다.
+    - state : 현재 Redux store의 state 데이터를 말한다.
+    - ownProps : history, location, match, staticContext 등 다양한 것들을 담고 있다.
+
+### mapDispatchToProps
+
+> Redux Store state 데이터를 조작하는 역할을 한다.
+> 
+- 매개변수로 dispatch와 ownProps를 받는다.
+
 ### useSelector
+
+> mapStateToProps 대신 사용해 Redux store state의 데이터를 가져온다.
+> 
+
+`const userData = useSelector((state) => state)`
+
+위 코드를 사용해 바로 state를 가져올 수 있다.
+
+### useDispatch
+
+> mapStateToDispatch 대신 사용하는 것
+> 
+
+```jsx
+const dispatch = useDispatch();
+
+dispatch(addUser(id))
+```
+
+# Redux Toolkit
+
+## Setup
+
+`$ npm i @reduxjs/toolkit`
+
+## 사용 방법
+
+### createAction
+
+- `createAction(타입)` :  액션을 생성하고 액션의 타입까지 정의한다.
+- `createAction` 으로 생성한 변수는 함수 형태이고, 함수를 실행하면 타입과 payload를 가진 객체를 반환한다.
+
+```jsx
+import { createAction } from "@reduxjs/toolkit";
+
+const addUser = createAction("ADD");
+const deleteUser = createAction("DELETE");
+
+const reducer = (state = [], action) => {
+  switch (action.type) {
+    case addToDo.type:
+      return [{ text: action.payload, id: Date.now(), ...state }];
+    case deleteToDo.type:
+      return state.filter((toDo) => toDo !== action.id);
+    default:
+      return state;
+  }
+};
+```
+
+### createReducer
+
+> 위에서 선언한 리듀서 함수에서 switch-case 문을 제거해 더 간단하게 만든 것
+> 
+- Redux Toolkit 에서는 state를 직접 변경해도 문제가 없다. 즉, 매번 새 객체나 배열을 생성할 필요가 없다. (Immer을 사용하고 있어서 변경 사항을 체크할 수 있기 때문이다.)
+- builder 콜백을 사용하지 않으면 에러가 발생하니 주의하자.
+
+```jsx
+import { createReducer } from "@reduxjs/toolkit";
+
+const reducer = createReducer(initialState, (builder) => {
+  builder
+	.addCase(addToDo, (state, action) => {})
+  .addCase(deleteToDo,(state, action) => {})
+})
+```
+
+### configureStore
+
+> Redux Store 를 생성
+> 
+
+```jsx
+export const store = configureStore(reducer)
+```
+
+### createSlice
+
+> Reducer, action 을 생성
+> 
+- 리듀서와 엑션을 생성하기 때문에 createAction과 createReducer가 필요없어진다.
+- createSlice는 name, initialState, reducers 를 가진 객체를 받아야 한다.
+- configureStore의 인자로 reducer 를 가진 객체를 받아야 한다.
+
+```jsx
+const toDo = createSlice({
+  name: "toDosReducer",
+  initialState: [],
+  reducers: {
+    add: (state, action) => {
+      state.push({ text: action.payload, id: Date.now() });
+    },
+    remove: (state, action) => {
+      state.filter((toDo) => toDo.id !== action.payload);
+    },
+  },
+});
+
+export const store = configureStore({ reducer: toDos.reducer });
+```
