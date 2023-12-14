@@ -202,9 +202,16 @@ const reducer = createReducer(initialState, (builder) => {
 
 > Redux Store 를 생성
 > 
+- createSlice로 만든 reducer 들을 하나의 reducer로 묶어준다.
+- useSelector을 사용해서 state를 가져오게 되면, state 내부에는 configureStore로 모아둔 리듀서가 포함되어있다.
+state.리듀서이름.value 를 입력하면 해당 리듀서의 상태 값이 나온다.
 
 ```jsx
-export const store = configureStore(reducer)
+export const store = configureStore({
+	reducer: {
+		리듀서이름:createSlice이름.reducer
+	}
+})
 ```
 
 ### createSlice
@@ -214,6 +221,7 @@ export const store = configureStore(reducer)
 - 리듀서와 엑션을 생성하기 때문에 createAction과 createReducer가 필요없어진다.
 - createSlice는 name, initialState, reducers 를 가진 객체를 받아야 한다.
 - configureStore의 인자로 reducer 를 가진 객체를 받아야 한다.
+- reducers 에서 state의 불변성을 지킬 필요가 없다. (spread 연산자로 구현할 필요가 없다.)
 
 ```jsx
 const toDo = createSlice({
@@ -231,3 +239,51 @@ const toDo = createSlice({
 
 export const store = configureStore({ reducer: toDos.reducer });
 ```
+
+### 정리
+
+생성
+```jsx
+const toDoSlice = createSlice({
+  name: "toDosReducer",
+  initialState: [],
+  reducers: {
+    add: (state, action) => {
+      state.push({ text: action.payload, id: Date.now() });
+    },
+    remove: (state, action) => {
+      state.filter((toDo) => toDo.id !== action.payload);
+    },
+  },
+});
+
+export const store = configureStore({
+	reducer: {
+		toDo:toDosReducer.reducer
+	}
+})
+```
+
+상태 호출
+```jsx
+useSelector((state) => {
+  return state.toDo.value
+})
+
+```
+
+상태 변경
+
+```jsx
+dispatch({type:createSlice내부의name/reducers이름, 값})
+
+// 예시
+dispatch({type:toDosReducer/add, text:1}) // payload 사용 X
+dispaych(toDo.actions.add(1)) // 값이 자동으로 payload로 저장
+```
+
+### Tip
+
+configureStore는 따로 store 파일에 만들어서 분리해둔다.
+
+createSlice는 따로 slice 파일에 만들어서 분리해둔다.
