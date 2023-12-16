@@ -287,3 +287,64 @@ dispaych(toDo.actions.add(1)) // 값이 자동으로 payload로 저장
 configureStore는 따로 store 파일에 만들어서 분리해둔다.
 
 createSlice는 따로 slice 파일에 만들어서 분리해둔다.
+
+# Redux Toolkit - thunk
+
+- createSlice 에서 reducers 에는 동기적인 액션을, extraReducers 에는 비동기적인 액션을 사용한다.
+
+## 사용 방법
+
+### createAsyncThunk()
+
+> 비동기 작업을 처리하는 액션을 만들어준다.
+> 
+
+`const 이름 = createAsyncThunk(타입, 액션 실행 시 처리되어야 하는 작업 코드)`
+
+createSlice의 extraReducers 에서는 async의 진행 상태인 pending, fulfilled, rejected 를 제공해주는데, 이때 해당 진행 상태에 따라 액션을 수행한다.
+
+```jsx
+const asyncTest = createAsyncThunk(
+	'testSlice/asyncTest',
+	async () => {
+		// 비동기 Fetch 요청
+	}
+)
+
+const testSlice = createSlice({
+	name: `testSlice`,
+	initialState:{
+		value:0,
+		status:"test"
+	},
+	extraReducers: (builder) => {
+		builder.addCase(asyncTest.pending, (state, action) => {
+			state.status = "로딩중";
+		})
+		builder.addCase(asyncTest.fulfilled, (state, action) => {
+			state.status = "성공";
+			state.value = action.payload;
+		})
+		builder.addCase(asyncTest.rejected, (state, action) => {
+			state.status = "실패";
+		})
+	}
+})
+
+// 사용
+const status = useSelector((state) => {
+	return state.test.status;
+})
+const result = useSelector((state) => {
+	return state.test.value;
+})
+
+<button onClick={() => {
+	dispatch(asyncTest());
+}}> Async Test : {status} {result}</button>
+```
+
+## 개인적인 견해
+
+직접 구현하는 것은 다른 상태 관리 기술들을 사용하기 전에 그 기술들의 작동 방식이나 내부 코드를 이해하기에 아주 좋은 방법이지만, Context 기반의 Redux가 굳이 비동기 처리까지 직접 구현해서 사용하는 것은 비효율적이고 번거로운 작업이 아닌가 하는 생각이 든다.
+따라서 Redux Toolkit 을 통해 기본기를 학습한 후, 실제 비동기 처리까지 구현하는 경우에는 Redux Toolkit 말고 React Query 를 사용하는 것이 좀 더 효율적일 것 같다. React Query는 좀 더 간단하게 비동기 요청의 진행 상태와 결과를 isLoding 과 data로 반환해주기 때문이다.
